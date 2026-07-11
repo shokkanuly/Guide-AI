@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="GovGuide AI — Your personal AI government navigator for Kazakhstan. Find grants, subsidies, and government services in seconds." />
+  <title>GovGuide AI — From Question to Application in Minutes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ============ NAVIGATION ============ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <div class="logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="logo-text">GovGuide <span class="logo-ai">AI</span></span>
+      </div>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How It Works</a>
+        <a href="#architecture" class="nav-link">Architecture</a>
+        <a href="#pricing" class="nav-link">Pricing</a>
+      </div>
+      <div class="nav-actions">
+        <a href="#" class="btn-ghost" onclick="showScreen('login')">Login</a>
+        <a href="#" class="btn-primary" onclick="showScreen('dashboard')">Get Started</a>
+      </div>
+      <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#" onclick="showScreen('login')">Login</a>
+      <a href="#" onclick="showScreen('dashboard')" class="mobile-cta">Get Started Free</a>
+    </div>
+  </nav>
+
+  <!-- ============ LANDING PAGE ============ -->
+  <div id="landingPage">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-bg-grid"></div>
+      <div class="hero-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>🇰🇿 Built for Kazakhstan · AI-Powered · Free to Start</span>
+        </div>
+        <h1 class="hero-title">
+          Your Personal<br/>
+          <span class="gradient-text">AI Government</span><br/>
+          Navigator
+        </h1>
+        <p class="hero-subtitle">
+          From question to application in minutes.<br/>
+          Find grants, subsidies, and services — without visiting 20 websites.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-hero-primary" onclick="showScreen('chat')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+            Start Chatting Free
+          </button>
+          <button class="btn-hero-secondary" onclick="showScreen('dashboard')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 3l14 9-14 9V3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            View Dashboard Demo
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-number">500+</span>
+            <span class="stat-label">Government Programs</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">15+</span>
+            <span class="stat-label">Ministries Covered</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">AI Available</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="chat-preview-card">
+          <div class="chat-header">
+            <div class="chat-avatar">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <div class="chat-name">GovGuide AI</div>
+              <div class="chat-status"><span class="online-dot"></span> Online now</div>
+            </div>
+          </div>
+          <div class="chat-messages-preview">
+            <div class="msg-bubble user-msg">I'm 22, a student from Almaty. Can I get any startup grants?</div>
+            <div class="msg-bubble ai-msg">
+              <div class="ai-typing" id="aiTyping">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="ai-response" id="aiResponse" style="display:none;">
+                ✅ Found <strong>3 programs</strong> for you:<br/><br/>
+                🎓 <strong>Youth Innovation Grant</strong> — 95% match<br/>
+                💼 <strong>Astana Hub Program</strong> — 88% match<br/>
+                🚀 <strong>Baiterek Startup Fund</strong> — 76% match<br/><br/>
+                <span class="chip">View documents needed →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-card card-grants">
+          <div class="fc-icon">🎯</div>
+          <div>
+            <div class="fc-title">4 New Grants</div>
+            <div class="fc-sub">Match your profile</div>
+          </div>
+        </div>
+        <div class="floating-card card-deadline">
+          <div class="fc-icon">⏰</div>
+          <div>
+            <div class="fc-title">Deadline in 5 days</div>
+            <div class="fc-sub">Baiterek Grant — Jul 14</div>
+          </div>
+        </div>
+        <div class="floating-card card-docs">
+          <div class="fc-icon">📄</div>
+          <div>
+            <div class="fc-title">Documents Ready</div>
+            <div class="fc-sub">3/4 uploaded</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRUST BAR -->
+    <section class="trust-bar">
+      <div class="trust-container">
+        <span class="trust-label">Covering programs from</span>
+        <div class="trust-logos">
+          <div class="trust-logo">egov.kz</div>
+          <div class="trust-logo">Baiterek</div>
+          <div class="trust-logo">Astana Hub</div>
+          <div class="trust-logo">MOIT</div>
+          <div class="trust-logo">Damu Fund</div>
+          <div class="trust-logo">Zhas Otan</div>
+          <div class="trust-logo">KazMunayGas</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROBLEM SECTION -->
+    <section class="problem-section" id="problem">
+      <div class="section-container">
+        <div class="problem-grid">
+          <div class="problem-text">
+            <div class="section-badge bad-badge">⚠️ The Problem</div>
+            <h2 class="section-title">Thousands miss opportunities<br/><span class="gradient-text-red">every year</span></h2>
+            <p class="section-desc">Government programs exist. But navigating them is a full-time job that most people can't afford to do.</p>
+            <div class="problem-list">
+              <div class="problem-item">
+                <div class="problem-icon problem-bad">✕</div>
+                <span>Information scattered across <strong>20+ government websites</strong></span>
+              </div>
+              <div class="problem-item">
+                <div class="problem-icon problem-bad">✕</div>
+                <span>Legal language that's <strong>nearly impossible to understand</strong></span>
+              </div>
+              <div class="problem-item">
+                <div class="problem-icon problem-bad">✕</div>
+                <span>No clear list of <strong>required documents</strong></span>
+              </div>
+              <div class="problem-item">
+                <div class="problem-icon problem-bad">✕</div>
+                <span>Applications <strong>rejected due to simple mistakes</strong></span>
+              </div>
+              <div class="problem-item">
+                <div class="problem-icon problem-bad">✕</div>
+                <span><strong>Missed deadlines</strong> because no one told you</span>
+              </div>
+            </div>
+          </div>
+          <div class="problem-visual">
+            <div class="chaos-card">
+              <div class="chaos-title">Before GovGuide AI</div>
+              <div class="chaos-sites">
+                <div class="chaos-site s1">egov.kz</div>
+                <div class="chaos-site s2">gov.kz</div>
+                <div class="chaos-site s3">baiterek.gov.kz</div>
+                <div class="chaos-site s4">astana-hub.kz</div>
+                <div class="chaos-site s5">damu.kz</div>
+                <div class="chaos-site s6">moit.gov.kz</div>
+                <div class="chaos-site s7">enbek.kz</div>
+                <div class="chaos-site s8">zakon.kz</div>
+              </div>
+              <div class="chaos-arrow">↓</div>
+              <div class="chaos-result">😰 Confused. Gave up.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOLUTION SECTION -->
+    <section class="solution-section">
+      <div class="section-container">
+        <div class="solution-badge">✨ The Solution</div>
+        <h2 class="section-title text-center">One AI. Every answer.</h2>
+        <p class="section-desc text-center">Ask a question. Get a personalized answer with documents, deadlines, and a step-by-step plan.</p>
+        <div class="solution-demo">
+          <div class="solution-input">
+            <div class="input-label">You ask:</div>
+            <div class="input-bubble">"I'm 18, a student from Karaganda. Can I get any scholarships?"</div>
+          </div>
+          <div class="solution-arrow-down">↓</div>
+          <div class="solution-output">
+            <div class="output-label">GovGuide AI responds:</div>
+            <div class="output-grid">
+              <div class="output-card">
+                <div class="oc-icon">🎯</div>
+                <div class="oc-title">Available Programs</div>
+                <div class="oc-list">
+                  <div>• Youth Innovation Grant</div>
+                  <div>• Bolashak Scholarship</div>
+                  <div>• Regional Support Fund</div>
+                </div>
+              </div>
+              <div class="output-card">
+                <div class="oc-icon">✅</div>
+                <div class="oc-title">Your Eligibility</div>
+                <div class="oc-list">
+                  <div>✓ Age requirement met</div>
+                  <div>✓ Region: Karaganda</div>
+                  <div>✓ Student status verified</div>
+                </div>
+              </div>
+              <div class="output-card">
+                <div class="oc-icon">📋</div>
+                <div class="oc-title">Required Documents</div>
+                <div class="oc-list">
+                  <div>• Passport copy</div>
+                  <div>• Student certificate</div>
+                  <div>• Transcript (2.5+ GPA)</div>
+                </div>
+              </div>
+              <div class="output-card">
+                <div class="oc-icon">🗺️</div>
+                <div class="oc-title">Step-by-Step Plan</div>
+                <div class="oc-list">
+                  <div>1. Collect documents</div>
+                  <div>2. Fill application</div>
+                  <div>3. Submit by July 30</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features-section" id="features">
+      <div class="section-container">
+        <div class="section-badge">🚀 Features</div>
+        <h2 class="section-title text-center">Everything you need to<br/><span class="gradient-text">navigate government</span></h2>
+        <div class="features-grid">
+
+          <div class="feature-card feature-large" onclick="showScreen('chat')">
+            <div class="feature-icon-large">💬</div>
+            <div class="feature-content">
+              <h3>AI Chat</h3>
+              <p>Ask anything in plain language. Get personalized answers about grants, subsidies, and services instantly.</p>
+              <div class="feature-example">
+                <div class="fe-msg">"I want to open an IT startup."</div>
+                <div class="fe-arrow">↓</div>
+                <div class="fe-result">Returns 5 matching programs with eligibility and next steps</div>
+              </div>
+            </div>
+            <div class="feature-arrow">→</div>
+          </div>
+
+          <div class="feature-card" onclick="showScreen('eligibility')">
+            <div class="feature-icon">🎯</div>
+            <h3>Smart Eligibility Checker</h3>
+            <p>Enter your profile. AI instantly shows all programs you qualify for with match percentage.</p>
+            <div class="match-preview">
+              <div class="match-item"><span class="match-pct high">95%</span><span>Youth Grant</span></div>
+              <div class="match-item"><span class="match-pct med">82%</span><span>Startup Fund</span></div>
+            </div>
+          </div>
+
+          <div class="feature-card" onclick="showScreen('documents')">
+            <div class="feature-icon">📋</div>
+            <h3>Document Checklist</h3>
+            <p>No more "bring required documents." AI creates a precise checklist and tells you where to get each one.</p>
+            <div class="checklist-preview">
+              <div class="cl-item done">✔ Passport</div>
+              <div class="cl-item done">✔ Tax certificate</div>
+              <div class="cl-item pending">○ Student certificate</div>
+            </div>
+          </div>
+
+          <div class="feature-card" onclick="showScreen('roadmap')">
+            <div class="feature-icon">🗺️</div>
+            <h3>Application Roadmap</h3>
+            <p>AI creates a full project plan for your application — like having a personal project manager.</p>
+            <div class="roadmap-mini">
+              <div class="rm-step done">Collect Passport</div>
+              <div class="rm-arrow">↓</div>
+              <div class="rm-step active">Download Certificate</div>
+              <div class="rm-arrow">↓</div>
+              <div class="rm-step">Submit Application</div>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📄</div>
+            <h3>Document Translator</h3>
+            <p>Upload any government PDF. AI explains it in simple Kazakh, Russian, or English instantly.</p>
+            <div class="lang-badges">
+              <span class="lang-badge">🇰🇿 Қазақша</span>
+              <span class="lang-badge">🇷🇺 Русский</span>
+              <span class="lang-badge">🇺🇸 English</span>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔔</div>
+            <h3>Deadline Reminders</h3>
+            <p>Save any application. Receive smart reminders before deadlines so you never miss an opportunity.</p>
+            <div class="reminder-preview">
+              <div class="reminder-item">⚠️ 5 days left — Baiterek Grant</div>
+              <div class="reminder-item">📅 Tomorrow — Upload business plan</div>
+            </div>
+          </div>
+
+          <div class="feature-card feature-large feature-proactive">
+            <div class="feature-icon-large">🤖</div>
+            <div class="feature-content">
+              <h3>AI Opportunity Matching <span class="badge-new">⭐ Signature Feature</span></h3>
+              <p>Instead of waiting for you to ask, GovGuide AI proactively scans new government announcements and notifies you when you match.</p>
+              <div class="proactive-notification">
+                <div class="pn-header">🔔 New Opportunity Found</div>
+                <div class="pn-body">"A new Baiterek startup grant opened today. Based on your profile, you're likely eligible. Deadline: July 28."</div>
+                <div class="pn-actions">
+                  <button class="pn-btn">View Grant →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-section" id="how-it-works">
+      <div class="section-container">
+        <div class="section-badge">⚙️ How It Works</div>
+        <h2 class="section-title text-center">Powered by RAG + Multi-Agent AI</h2>
+        <div class="how-grid">
+          <div class="how-step">
+            <div class="step-number">01</div>
+            <div class="step-icon">📚</div>
+            <h3>Government Data Ingested</h3>
+            <p>PDFs, websites, and regulations from 15+ ministries are parsed, chunked, embedded, and stored in ChromaDB.</p>
+          </div>
+          <div class="how-arrow">→</div>
+          <div class="how-step">
+            <div class="step-number">02</div>
+            <div class="step-icon">🔍</div>
+            <h3>Your Question Analyzed</h3>
+            <p>Your message is embedded and similarity-searched against all government documents to find the most relevant context.</p>
+          </div>
+          <div class="how-arrow">→</div>
+          <div class="how-step">
+            <div class="step-number">03</div>
+            <div class="step-icon">🤖</div>
+            <h3>Multi-Agent Processing</h3>
+            <p>Specialized AI agents (Grant, Legal, Document, Recommendation) collaborate to build your personalized answer.</p>
+          </div>
+          <div class="how-arrow">→</div>
+          <div class="how-step">
+            <div class="step-number">04</div>
+            <div class="step-icon">✅</div>
+            <h3>Your Answer + Action Plan</h3>
+            <p>You receive a complete response with eligible programs, documents needed, official links, and a roadmap.</p>
+          </div>
+        </div>
+
+        <!-- Agent Architecture Diagram -->
+        <div class="arch-diagram">
+          <div class="arch-title">Multi-Agent Architecture</div>
+          <div class="arch-center">
+            <div class="arch-user">User Query</div>
+            <div class="arch-down">↓</div>
+            <div class="arch-orchestrator">🧠 AI Orchestrator</div>
+            <div class="arch-branches">
+              <div class="arch-agent">
+                <div class="agent-icon">🎁</div>
+                <div>Grant Agent</div>
+                <div class="agent-sub">Finds programs</div>
+              </div>
+              <div class="arch-agent">
+                <div class="agent-icon">⚖️</div>
+                <div>Legal Agent</div>
+                <div class="agent-sub">Explains laws</div>
+              </div>
+              <div class="arch-agent">
+                <div class="agent-icon">📄</div>
+                <div>Document Agent</div>
+                <div class="agent-sub">Checks files</div>
+              </div>
+              <div class="arch-agent">
+                <div class="agent-icon">🎯</div>
+                <div>Recommendation</div>
+                <div class="agent-sub">Ranks results</div>
+              </div>
+            </div>
+            <div class="arch-down">↓</div>
+            <div class="arch-result">📊 Final Response Generator</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE SECTION -->
+    <section class="arch-section" id="architecture">
+      <div class="section-container">
+        <div class="section-badge">🏗️ Architecture</div>
+        <h2 class="section-title text-center">Built to scale from day one</h2>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tc-icon">⚛️</div>
+            <div class="tc-title">Frontend</div>
+            <div class="tc-stack">
+              <span class="tc-tag">Next.js</span>
+              <span class="tc-tag">React</span>
+              <span class="tc-tag">TypeScript</span>
+              <span class="tc-tag">Tailwind</span>
+              <span class="tc-tag">shadcn/ui</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tc-icon">⚡</div>
+            <div class="tc-title">Backend</div>
+            <div class="tc-stack">
+              <span class="tc-tag">FastAPI</span>
+              <span class="tc-tag">Python</span>
+              <span class="tc-tag">Pydantic</span>
+              <span class="tc-tag">SQLAlchemy</span>
+              <span class="tc-tag">Uvicorn</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tc-icon">🤖</div>
+            <div class="tc-title">AI Stack</div>
+            <div class="tc-stack">
+              <span class="tc-tag">OpenAI GPT</span>
+              <span class="tc-tag">LangChain</span>
+              <span class="tc-tag">ChromaDB</span>
+              <span class="tc-tag">RAG Pipeline</span>
+              <span class="tc-tag">Embeddings</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tc-icon">🗄️</div>
+            <div class="tc-title">Data Layer</div>
+            <div class="tc-stack">
+              <span class="tc-tag">PostgreSQL</span>
+              <span class="tc-tag">Redis</span>
+              <span class="tc-tag">ChromaDB</span>
+              <span class="tc-tag">AWS S3</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tc-icon">☁️</div>
+            <div class="tc-title">Infrastructure</div>
+            <div class="tc-stack">
+              <span class="tc-tag">Vercel</span>
+              <span class="tc-tag">Railway</span>
+              <span class="tc-tag">Docker</span>
+              <span class="tc-tag">GitHub Actions</span>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tc-icon">🔐</div>
+            <div class="tc-title">Security</div>
+            <div class="tc-stack">
+              <span class="tc-tag">JWT Auth</span>
+              <span class="tc-tag">OAuth 2.0</span>
+              <span class="tc-tag">bcrypt</span>
+              <span class="tc-tag">Rate Limiting</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RAG Pipeline Visual -->
+        <div class="rag-pipeline">
+          <div class="rag-title">RAG Pipeline</div>
+          <div class="rag-steps">
+            <div class="rag-step">📂 Gov PDFs</div>
+            <div class="rag-arr">→</div>
+            <div class="rag-step">✂️ Chunking</div>
+            <div class="rag-arr">→</div>
+            <div class="rag-step">🧮 Embeddings</div>
+            <div class="rag-arr">→</div>
+            <div class="rag-step">🗃️ ChromaDB</div>
+            <div class="rag-arr">→</div>
+            <div class="rag-step">🔍 Similarity Search</div>
+            <div class="rag-arr">→</div>
+            <div class="rag-step">🤖 GPT</div>
+            <div class="rag-arr">→</div>
+            <div class="rag-step">✅ Answer + Sources</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING SECTION -->
+    <section class="pricing-section" id="pricing">
+      <div class="section-container">
+        <div class="section-badge">💳 Pricing</div>
+        <h2 class="section-title text-center">Start free. Scale as you grow.</h2>
+        <div class="pricing-grid">
+          <div class="pricing-card">
+            <div class="pricing-tier">Free</div>
+            <div class="pricing-price">₸0<span>/month</span></div>
+            <div class="pricing-desc">Perfect for individuals exploring opportunities</div>
+            <div class="pricing-features">
+              <div class="pf-item">✓ AI Chat (50 messages/day)</div>
+              <div class="pf-item">✓ Eligibility Checker</div>
+              <div class="pf-item">✓ Basic Grant Search</div>
+              <div class="pf-item">✓ Document Checklist</div>
+              <div class="pf-item pf-no">✗ Document Analysis</div>
+              <div class="pf-item pf-no">✗ Application Tracking</div>
+              <div class="pf-item pf-no">✗ Priority AI</div>
+            </div>
+            <button class="pricing-btn pricing-btn-outline" onclick="showScreen('dashboard')">Get Started</button>
+          </div>
+          <div class="pricing-card pricing-featured">
+            <div class="pricing-popular">⭐ Most Popular</div>
+            <div class="pricing-tier">Premium</div>
+            <div class="pricing-price">₸4,990<span>/month</span></div>
+            <div class="pricing-desc">For serious applicants who want to win</div>
+            <div class="pricing-features">
+              <div class="pf-item">✓ Unlimited AI Chat</div>
+              <div class="pf-item">✓ Everything in Free</div>
+              <div class="pf-item">✓ Document Analysis (PDF)</div>
+              <div class="pf-item">✓ Application Tracking</div>
+              <div class="pf-item">✓ Deadline Reminders</div>
+              <div class="pf-item">✓ Priority AI responses</div>
+              <div class="pf-item">✓ Form Fill Assistant</div>
+            </div>
+            <button class="pricing-btn pricing-btn-primary" onclick="showScreen('dashboard')">Start Premium</button>
+          </div>
+          <div class="pricing-card">
+            <div class="pricing-tier">Enterprise</div>
+            <div class="pricing-price">Custom</div>
+            <div class="pricing-desc">For banks, universities, and government agencies</div>
+            <div class="pricing-features">
+              <div class="pf-item">✓ Everything in Premium</div>
+              <div class="pf-item">✓ Custom AI training</div>
+              <div class="pf-item">✓ White-label solution</div>
+              <div class="pf-item">✓ API access</div>
+              <div class="pf-item">✓ SLA guarantee</div>
+              <div class="pf-item">✓ Dedicated support</div>
+            </div>
+            <button class="pricing-btn pricing-btn-outline">Contact Sales</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA SECTION -->
+    <section class="cta-section">
+      <div class="cta-orb cta-orb-1"></div>
+      <div class="cta-orb cta-orb-2"></div>
+      <div class="section-container cta-content">
+        <h2 class="cta-title">Ready to find your grants?</h2>
+        <p class="cta-sub">Join thousands of Kazakhstani citizens discovering opportunities they never knew existed.</p>
+        <div class="cta-actions">
+          <button class="btn-hero-primary" onclick="showScreen('chat')">
+            Start Chatting Free →
+          </button>
+          <button class="btn-hero-secondary" onclick="showScreen('dashboard')">
+            See Dashboard Demo
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <div class="nav-logo">
+            <div class="logo-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="logo-text">GovGuide <span class="logo-ai">AI</span></span>
+          </div>
+          <p>From question to application in minutes.</p>
+        </div>
+        <div class="footer-links">
+          <div class="fl-col">
+            <div class="fl-title">Product</div>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#" onclick="showScreen('chat')">AI Chat</a>
+            <a href="#" onclick="showScreen('dashboard')">Dashboard</a>
+          </div>
+          <div class="fl-col">
+            <div class="fl-title">Covered</div>
+            <a href="#">eGov.kz</a>
+            <a href="#">Baiterek</a>
+            <a href="#">Astana Hub</a>
+            <a href="#">Damu Fund</a>
+          </div>
+          <div class="fl-col">
+            <div class="fl-title">Company</div>
+            <a href="#">About</a>
+            <a href="#">Blog</a>
+            <a href="#">Contact</a>
+            <a href="#">Privacy Policy</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 GovGuide AI. Built with ❤️ for Kazakhstan.</span>
+        <div class="footer-langs">
+          <span>🇰🇿 Қазақша</span>
+          <span>🇷🇺 Русский</span>
+          <span>🇺🇸 English</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ============ APP SCREENS ============ -->
+  <div id="appScreens" style="display:none;">
+
+    <!-- APP NAV -->
+    <nav class="app-navbar">
+      <div class="nav-container">
+        <button class="back-btn" onclick="showLanding()">← Back</button>
+        <div class="nav-logo" onclick="showLanding()" style="cursor:pointer;">
+          <div class="logo-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" stroke-width="2" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="logo-text">GovGuide <span class="logo-ai">AI</span></span>
+        </div>
+        <div class="app-user">
+          <div class="user-avatar">A</div>
+          <span>Aibek</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- APP SIDEBAR + CONTENT -->
+    <div class="app-layout">
+      <aside class="app-sidebar">
+        <div class="sidebar-menu">
+          <div class="sidebar-item" id="nav-dashboard" onclick="showScreen('dashboard')">
+            <span class="si-icon">🏠</span><span>Dashboard</span>
+          </div>
+          <div class="sidebar-item" id="nav-chat" onclick="showScreen('chat')">
+            <span class="si-icon">💬</span><span>AI Chat</span>
+          </div>
+          <div class="sidebar-item" id="nav-eligibility" onclick="showScreen('eligibility')">
+            <span class="si-icon">🎯</span><span>Eligibility</span>
+          </div>
+          <div class="sidebar-item" id="nav-documents" onclick="showScreen('documents')">
+            <span class="si-icon">📋</span><span>Documents</span>
+          </div>
+          <div class="sidebar-item" id="nav-roadmap" onclick="showScreen('roadmap')">
+            <span class="si-icon">🗺️</span><span>Roadmap</span>
+          </div>
+          <div class="sidebar-item" id="nav-opportunities" onclick="showScreen('opportunities')">
+            <span class="si-icon">✨</span><span>Opportunities</span>
+          </div>
+        </div>
+        <div class="sidebar-bottom">
+          <div class="sidebar-item" id="nav-profile" onclick="showScreen('profile')">
+            <span class="si-icon">👤</span><span>Profile</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="app-content" id="appContent">
+        <!-- Screens injected by JS -->
+      </main>
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <nav class="mobile-bottom-nav">
+      <button onclick="showScreen('dashboard')" class="mbn-item" id="mbn-dashboard">🏠<span>Home</span></button>
+      <button onclick="showScreen('chat')" class="mbn-item" id="mbn-chat">💬<span>Chat</span></button>
+      <button onclick="showScreen('eligibility')" class="mbn-item" id="mbn-eligibility">🎯<span>Check</span></button>
+      <button onclick="showScreen('documents')" class="mbn-item" id="mbn-documents">📄<span>Docs</span></button>
+      <button onclick="showScreen('profile')" class="mbn-item" id="mbn-profile">👤<span>Profile</span></button>
+    </nav>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

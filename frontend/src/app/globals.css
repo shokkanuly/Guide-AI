@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-emerald-primary: #10B981;
+  --color-emerald-light: #34D399;
+  --color-emerald-dark: #059669;
+  --color-blue-primary: #3B82F6;
+  --color-orange-primary: #F59E0B;
+  --color-red-primary: #EF4444;
+  
+  --color-bg-dark: #070B14;
+  --color-bg-card: #0D1526;
+  --color-bg-card-hover: #111D35;
+  --color-border-card: rgba(255, 255, 255, 0.07);
+  --color-border-green: rgba(16, 185, 129, 0.3);
+  
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #4B5563;
+  
+  --radius-radius-sm: 10px;
+  --radius-radius-md: 16px;
+  --radius-radius-lg: 24px;
+}
+
+:root {
+  background-color: #070B14;
+  color: #F9FAFB;
+}
+
+body {
+  background-color: #070B14;
+  color: #F9FAFB;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070B14;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Glow effects & animations */
+.gradient-text {
+  background: linear-gradient(135deg, #10B981 0%, #34D399 50%, #06B6D4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-red {
+  background: linear-gradient(135deg, #EF4444 0%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-card {
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.15);
+}
+
+.glass-panel {
+  background: rgba(13, 21, 38, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}

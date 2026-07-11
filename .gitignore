@@ -1,0 +1,33 @@
+# Node/Frontend
+node_modules/
+.next/
+out/
+build/
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# Python/Backend
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Database / Local Stores
+postgres_data/
+redis_data/
+chroma_data/
+
+# OS Files
+.DS_Store
+Thumbs.db
