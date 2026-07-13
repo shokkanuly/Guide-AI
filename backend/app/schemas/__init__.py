@@ -254,6 +254,7 @@ class EligibleProgram(BaseModel):
     match_reasons: List[str]
     missing_criteria: List[str]
     required_documents: List[str]
+    next_steps: List[str] = []
 
 
 class EligibilityResponse(BaseResponse):
@@ -308,6 +309,11 @@ class RoadmapStep(BaseModel):
     status: str  # "pending" | "in_progress" | "done"
     due_date: Optional[str]
     action_url: Optional[str]
+
+
+class UpdateStepRequest(BaseModel):
+    step: int
+    status: str  # "pending" | "current" | "done"
 
 
 class ApplicationResponse(BaseModel):

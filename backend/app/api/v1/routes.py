@@ -26,6 +26,7 @@ from app.schemas import (
     ApplicationsListResponse,
     PaginationMeta,
     RoadmapStep,
+    UpdateStepRequest,
 )
 from app.services.eligibility_service import EligibilityService
 
@@ -134,6 +135,15 @@ async def get_dashboard(current_user: CurrentUser, db: DB) -> dict:
 # ELIGIBILITY ROUTER
 # ================================================================
 eligibility_router = APIRouter(prefix="/eligibility", tags=["Eligibility"])
+
+
+@eligibility_router.get(
+    "/demo-profiles",
+    summary="Get predefined mock profiles for demo",
+)
+async def get_demo_profiles() -> list:
+    from app.utils.seed_data import DEMO_PROFILES
+    return DEMO_PROFILES
 
 
 @eligibility_router.post(
@@ -468,47 +478,166 @@ async def list_applications(
     )
 
 
+@applications_router.get(
+    "/{application_id}",
+    response_model=ApplicationResponse,
+    summary="Get detailed application roadmap by ID",
+)
+async def get_application_details(
+    application_id: uuid.UUID,
+    current_user: CurrentUser,
+    db: DB,
+) -> ApplicationResponse:
+    from app.models.application import Application
+    from app.models.program import GovernmentProgram
+
+    result = await db.execute(
+        select(Application, GovernmentProgram.title_ru)
+        .join(GovernmentProgram, Application.program_id == GovernmentProgram.id)
+        .where(
+            Application.id == application_id,
+            Application.user_id == current_user.id
+        )
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Application roadmap not found"
+        )
+
+    app, program_title = row
+
+    return ApplicationResponse(
+        id=app.id,
+        program_id=app.program_id,
+        program_title=program_title,
+        status=app.status.value,
+        roadmap=[RoadmapStep(**s) for s in (app.roadmap or [])],
+        current_step=app.current_step,
+        completion_pct=app.completion_pct,
+        attached_documents=app.attached_documents or [],
+        notes=app.notes,
+        created_at=app.created_at,
+    )
+
+
+@applications_router.put(
+    "/{application_id}/step",
+    response_model=ApplicationResponse,
+    summary="Update step status in application roadmap",
+)
+async def update_application_step(
+    application_id: uuid.UUID,
+    request: UpdateStepRequest,
+    current_user: CurrentUser,
+    db: DB,
+) -> ApplicationResponse:
+    from app.models.application import Application, ApplicationStatus
+    from app.models.program import GovernmentProgram
+
+    result = await db.execute(
+        select(Application, GovernmentProgram.title_ru)
+        .join(GovernmentProgram, Application.program_id == GovernmentProgram.id)
+        .where(
+            Application.id == application_id,
+            Application.user_id == current_user.id
+        )
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Application roadmap not found"
+        )
+
+    app, program_title = row
+    
+    # Update roadmap step status
+    roadmap = list(app.roadmap or [])
+    step_found = False
+    
+    for step_data in roadmap:
+        if step_data.get("step") == request.step:
+            step_data["status"] = request.status
+            step_found = True
+            break
+            
+    if not step_found:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Step {request.step} not found in this roadmap"
+        )
+
+    # Recalculate progress metrics
+    done_steps = sum(1 for s in roadmap if s.get("status") == "done")
+    total_steps = len(roadmap)
+    completion_pct = round((done_steps / total_steps) * 100, 1) if total_steps > 0 else 0.0
+    
+    # Calculate current step (first step that is not done)
+    current_step = 0
+    for s in roadmap:
+        if s.get("status") != "done":
+            current_step = s.get("step") - 1
+            break
+    if all(s.get("status") == "done" for s in roadmap):
+        current_step = total_steps
+        app.status = ApplicationStatus.SUBMITTED
+
+    # Write changes back
+    app.roadmap = roadmap
+    app.completion_pct = completion_pct
+    app.current_step = current_step
+    
+    await db.flush()
+
+    return ApplicationResponse(
+        id=app.id,
+        program_id=app.program_id,
+        program_title=program_title,
+        status=app.status.value,
+        roadmap=[RoadmapStep(**s) for s in (app.roadmap or [])],
+        current_step=app.current_step,
+        completion_pct=app.completion_pct,
+        attached_documents=app.attached_documents or [],
+        notes=app.notes,
+        created_at=app.created_at,
+    )
+
+
 def _generate_roadmap(required_docs: list[str]) -> list[RoadmapStep]:
-    """Generate a step-by-step application roadmap."""
+    """Generate a step-by-step application roadmap with exactly 4 phases."""
     steps = []
-    step_num = 1
 
-    # Step 1: Profile
+    # Step 1: Document Checklist
+    doc_str = ", ".join(d.replace("_", " ").title() for d in required_docs) if required_docs else "relevant criteria"
     steps.append(RoadmapStep(
-        step=step_num, title="Complete Your Profile",
-        description="Make sure your profile has all required information.",
-        status="done", due_date=None, action_url="/profile",
+        step=1, title="Document Checklist",
+        description=f"Collect and verify all required documents: {doc_str}.",
+        status="current", due_date=None, action_url="/documents",
     ))
-    step_num += 1
 
-    # Step 2: Collect documents
-    for doc in required_docs[:5]:
-        steps.append(RoadmapStep(
-            step=step_num,
-            title=f"Upload {doc.replace('_', ' ').title()}",
-            description=f"Get and upload your {doc.replace('_', ' ')}.",
-            status="pending",
-            due_date=None,
-            action_url="/documents",
-        ))
-        step_num += 1
-
-    # Final steps
+    # Step 2: Application form
     steps.append(RoadmapStep(
-        step=step_num, title="Fill Application Form",
-        description="Complete the application form with AI assistance.",
+        step=2, title="Fill Application Form",
+        description="Prepare your business plan/application form details for formal review.",
         status="pending", due_date=None, action_url=None,
     ))
+
+    # Step 3: Submission & Deadline
     steps.append(RoadmapStep(
-        step=step_num + 1, title="Submit Application",
-        description="Review everything and submit before the deadline.",
+        step=3, title="Track Deadline & Submission",
+        description="Formally submit the application package on the official portal before the deadline.",
         status="pending", due_date=None, action_url=None,
     ))
+
+    # Step 4: Follow-up
     steps.append(RoadmapStep(
-        step=step_num + 2, title="Track Status",
-        description="We'll notify you of any updates on your application.",
+        step=4, title="Follow-up & Monitoring",
+        description="Monitor status notifications, attend interviews or phone verification calls if requested.",
         status="pending", due_date=None, action_url=None,
     ))
+
     return steps
 
 

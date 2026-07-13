@@ -27,6 +27,7 @@ export default function ProgramsPage() {
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"all" | "saved">("all");
 
   const fetchData = async () => {
     setLoading(true);
@@ -35,8 +36,21 @@ export default function ProgramsPage() {
         api.get(`/programs?search=${search}&category=${category}`),
         api.get("/programs/saved"),
       ]);
-      setPrograms(programsRes.data.data || []);
-      setSavedIds((savedRes.data || []).map((p: any) => p.id));
+      const allSaved = savedRes.data || [];
+      setSavedIds(allSaved.map((p: any) => p.id));
+
+      if (viewMode === "saved") {
+        const filteredSaved = allSaved.filter((p: any) => {
+          const matchesCategory = !category || p.category === category;
+          const matchesSearch = !search ||
+            p.title.toLowerCase().includes(search.toLowerCase()) ||
+            p.organization.toLowerCase().includes(search.toLowerCase());
+          return matchesCategory && matchesSearch;
+        });
+        setPrograms(filteredSaved);
+      } else {
+        setPrograms(programsRes.data.data || []);
+      }
     } catch (err) {
       setError("Failed to fetch programs directory.");
     } finally {
@@ -46,7 +60,7 @@ export default function ProgramsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [category]);
+  }, [category, viewMode]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +96,30 @@ export default function ProgramsPage() {
           <p className="text-sm text-text-secondary mt-1">
             Browse active Kazakhstani initiatives, grants, and support measures.
           </p>
+        </div>
+
+        {/* Toggle between All and Saved */}
+        <div className="flex gap-2 p-1 bg-bg-card border border-border-card rounded-2xl w-fit">
+          <button
+            onClick={() => setViewMode("all")}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              viewMode === "all"
+                ? "bg-emerald-primary text-white"
+                : "text-text-secondary hover:text-white"
+            }`}
+          >
+            All Programs
+          </button>
+          <button
+            onClick={() => setViewMode("saved")}
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+              viewMode === "saved"
+                ? "bg-emerald-primary text-white"
+                : "text-text-secondary hover:text-white"
+            }`}
+          >
+            Saved Opportunities ({savedIds.length})
+          </button>
         </div>
 
         {/* Filters */}

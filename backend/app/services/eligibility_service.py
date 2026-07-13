@@ -88,12 +88,14 @@ class EligibilityService:
                 official_url=program.official_url,
                 match_score=score,
             )
+            next_steps = self._generate_next_steps(program, missing, lang)
             eligible_programs.append(EligibleProgram(
                 program=summary,
                 match_score=score,
                 match_reasons=reasons,
                 missing_criteria=missing,
                 required_documents=program.required_documents or [],
+                next_steps=next_steps,
             ))
 
         # Calculate profile completeness
@@ -190,3 +192,34 @@ class EligibilityService:
         ]
         filled = sum(1 for f in fields if f is not None and f != [] and f != "")
         return round((filled / len(fields)) * 100, 1)
+
+    def _generate_next_steps(self, program: GovernmentProgram, missing: list[str], lang: str) -> list[str]:
+        steps = []
+        
+        # Translate helper
+        if lang == "kz":
+            if missing:
+                steps.append("Сәйкестік критерийлерін толтыру немесе түзету")
+            if program.required_documents:
+                steps.append(f"Құжаттарды дайындау: {', '.join(program.required_documents[:3])}")
+            steps.append("GovGuide-та өтінімнің жол картасын жасау")
+            if program.official_url:
+                steps.append(f"Ресми порталда өтінім беру: {program.official_url}")
+        elif lang == "en":
+            if missing:
+                steps.append("Address missing eligibility requirements")
+            if program.required_documents:
+                steps.append(f"Prepare documents: {', '.join(program.required_documents[:3])}")
+            steps.append("Create an application roadmap in GovGuide")
+            if program.official_url:
+                steps.append(f"Apply on the official portal: {program.official_url}")
+        else: # default to ru
+            if missing:
+                steps.append("Устранить несоответствия требованиям")
+            if program.required_documents:
+                steps.append(f"Подготовить документы: {', '.join(program.required_documents[:3])}")
+            steps.append("Создать дорожную карту подачи в GovGuide")
+            if program.official_url:
+                steps.append(f"Подать заявку на официальном сайте: {program.official_url}")
+                
+        return steps

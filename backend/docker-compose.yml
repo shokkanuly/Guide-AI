@@ -76,6 +76,7 @@ services:
         condition: service_started
     volumes:
       - ./app:/app/app:ro  # Mount for hot-reload in dev
+      - ./tests:/app/tests:ro  # Mount tests for execution inside container
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   # ---- Next.js Frontend ----

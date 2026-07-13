@@ -111,42 +111,25 @@ Total characters extracted: {len(text)}
 Please analyze this document and return the structured JSON analysis."""
 
     # Configure Gemini SDK
-    api_key = settings.gemini_api_key or settings.openai_api_key
-    # Check if we should use Google Gen AI SDK
-    if settings.gemini_api_key and settings.gemini_api_key != "sk-placeholder" and settings.gemini_api_key != "":
-        genai.configure(api_key=settings.gemini_api_key)
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
-            system_instruction=ANALYSIS_SYSTEM_PROMPT
-        )
-        response = await model.generate_content_async(
-            user_content,
-            generation_config={
-                "response_mime_type": "application/json",
-                "temperature": 0.1,
-            }
-        )
-        raw = response.text
-        model_name = "gemini-1.5-pro"
-        tokens_used = 0  # Gemini SDK doesn't expose usage directly on the async response text call easily, default to 0
-    else:
-        # Fallback to OpenAI
-        from openai import AsyncOpenAI
-        ai_client = AsyncOpenAI(api_key=settings.openai_api_key)
-        messages = [
-            {"role": "system", "content": ANALYSIS_SYSTEM_PROMPT},
-            {"role": "user", "content": user_content},
-        ]
-        response = await ai_client.chat.completions.create(
-            model=settings.openai_model,
-            messages=messages,
-            max_tokens=3000,
-            temperature=0.1,
-            response_format={"type": "json_object"},
-        )
-        raw = response.choices[0].message.content
-        model_name = settings.openai_model
-        tokens_used = response.usage.total_tokens if response.usage else 0
+    api_key = settings.gemini_api_key
+    if not api_key or api_key == "sk-placeholder" or api_key == "":
+        raise ValueError("GEMINI_API_KEY is not configured in the environment settings")
+
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel(
+        model_name="gemini-1.5-pro",
+        system_instruction=ANALYSIS_SYSTEM_PROMPT
+    )
+    response = await model.generate_content_async(
+        user_content,
+        generation_config={
+            "response_mime_type": "application/json",
+            "temperature": 0.1,
+        }
+    )
+    raw = response.text
+    model_name = "gemini-1.5-pro"
+    tokens_used = 0
 
     processing_ms = int((time.time() - start) * 1000)
 

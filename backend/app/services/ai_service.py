@@ -103,60 +103,52 @@ class AIService:
         messages.append({"role": "user", "content": request.message})
 
         # ---- Step 4: AI Call ----
-        if settings.gemini_api_key and settings.gemini_api_key != "sk-placeholder" and settings.gemini_api_key != "":
-            genai.configure(api_key=settings.gemini_api_key)
-            
-            # Combine system instructions
-            system_instruction_parts = [SYSTEM_PROMPT]
-            if profile_text:
-                system_instruction_parts.append(f"User Profile:\n{profile_text}")
-            if context_text:
-                system_instruction_parts.append(f"Relevant Government Documents:\n{context_text}")
-            system_instruction = "\n\n---\n\n".join(system_instruction_parts)
-            
-            # Convert history to Gemini format
-            gemini_history = []
-            if conversation_history:
-                for msg in conversation_history[-12:]:
-                    role = msg.get("role")
-                    if role == "assistant":
-                        role = "model"
-                    elif role == "system":
-                        continue
-                    gemini_history.append({
-                        "role": role,
-                        "parts": [msg.get("content")]
-                    })
-            
-            # Append final message
-            gemini_history.append({
-                "role": "user",
-                "parts": [request.message]
-            })
-            
-            model = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
-                system_instruction=system_instruction
-            )
-            response = await model.generate_content_async(
-                gemini_history,
-                generation_config={
-                    "temperature": settings.openai_temperature,
-                }
-            )
-            answer = response.text
-            tokens_used = 0
-        else:
-            # Fallback to OpenAI
-            ai_client, model_name = get_ai_client("chat")
-            response = await ai_client.chat.completions.create(
-                model=model_name,
-                messages=messages,
-                max_tokens=settings.openai_max_tokens,
-                temperature=settings.openai_temperature,
-            )
-            answer = response.choices[0].message.content
-            tokens_used = response.usage.total_tokens if response.usage else 0
+        api_key = settings.gemini_api_key
+        if not api_key or api_key == "sk-placeholder" or api_key == "":
+            raise ValueError("GEMINI_API_KEY is not configured in the environment settings")
+
+        genai.configure(api_key=api_key)
+        
+        # Combine system instructions
+        system_instruction_parts = [SYSTEM_PROMPT]
+        if profile_text:
+            system_instruction_parts.append(f"User Profile:\n{profile_text}")
+        if context_text:
+            system_instruction_parts.append(f"Relevant Government Documents:\n{context_text}")
+        system_instruction = "\n\n---\n\n".join(system_instruction_parts)
+        
+        # Convert history to Gemini format
+        gemini_history = []
+        if conversation_history:
+            for msg in conversation_history[-12:]:
+                role = msg.get("role")
+                if role == "assistant":
+                    role = "model"
+                elif role == "system":
+                    continue
+                gemini_history.append({
+                    "role": role,
+                    "parts": [msg.get("content")]
+                })
+        
+        # Append final message
+        gemini_history.append({
+            "role": "user",
+            "parts": [request.message]
+        })
+        
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-flash",
+            system_instruction=system_instruction
+        )
+        response = await model.generate_content_async(
+            gemini_history,
+            generation_config={
+                "temperature": settings.openai_temperature,
+            }
+        )
+        answer = response.text
+        tokens_used = 0
 
         # ---- Step 5: Extract structured data ----
         programs_found = self._extract_programs(retrieved_docs)

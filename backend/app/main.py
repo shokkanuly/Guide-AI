@@ -47,6 +47,12 @@ async def lifespan(app: FastAPI):
     if settings.is_development:
         await init_db()
         logger.info("✅ Database tables initialized")
+        
+        # Auto-seed if empty
+        from app.database import AsyncSessionLocal
+        from app.utils.seed_data import auto_seed_if_empty
+        async with AsyncSessionLocal() as db:
+            await auto_seed_if_empty(db)
 
     yield
 

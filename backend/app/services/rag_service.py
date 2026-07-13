@@ -37,21 +37,24 @@ class RAGService:
     # ---- Embedding ----
     async def embed_text(self, text: str) -> list[float]:
         """Generate an embedding vector for a text string."""
-        if settings.gemini_api_key and settings.gemini_api_key != "sk-placeholder" and settings.gemini_api_key != "":
-            embed_client = AsyncOpenAI(
-                api_key=settings.gemini_api_key,
-                base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-            )
-            model = "text-embedding-004"
-        else:
-            embed_client = AsyncOpenAI(api_key=settings.openai_api_key)
-            model = settings.openai_embedding_model
+        import google.generativeai as genai
+        from fastapi.concurrency import run_in_threadpool
 
-        response = await embed_client.embeddings.create(
-            model=model,
-            input=text,
-        )
-        return response.data[0].embedding
+        api_key = settings.gemini_api_key
+        if not api_key or api_key == "sk-placeholder" or api_key == "":
+            raise ValueError("GEMINI_API_KEY is not configured in the environment settings")
+
+        genai.configure(api_key=api_key)
+
+        def _embed():
+            result = genai.embed_content(
+                model="models/text-embedding-004",
+                content=text,
+                task_type="retrieval_document"
+            )
+            return result['embedding']
+
+        return await run_in_threadpool(_embed)
 
     # ---- Ingestion ----
     async def ingest_program(

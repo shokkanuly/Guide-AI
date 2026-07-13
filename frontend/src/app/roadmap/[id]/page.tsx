@@ -38,21 +38,26 @@ export default function RoadmapDetailPage({ params }: { params: Promise<{ id: st
 
   const fetchRoadmapDetail = async () => {
     try {
-      // Endpoint to fetch single application.
-      // Wait, list_applications has page offsets, let's see if there's a GET /applications/{id} in backend routes
-      // Let's check routes.py to confirm endpoint name
-      const res = await api.get(`/applications`);
-      // Since there is no direct single application GET, let's search from the list or simulate detail response
-      const matched = res.data.data.find((app: any) => app.id === id);
-      if (matched) {
-        setDetail(matched);
-      } else {
-        setError("Roadmap not found.");
-      }
+      const res = await api.get(`/applications/${id}`);
+      setDetail(res.data);
     } catch (err) {
       setError("Failed to load roadmap details.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleStep = async (stepNum: number, currentStatus: string) => {
+    if (!detail) return;
+    const newStatus = currentStatus === "done" ? "pending" : "done";
+    try {
+      const res = await api.put(`/applications/${id}/step`, {
+        step: stepNum,
+        status: newStatus
+      });
+      setDetail(res.data);
+    } catch (err: any) {
+      alert("Failed to update task: " + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -128,15 +133,19 @@ export default function RoadmapDetailPage({ params }: { params: Promise<{ id: st
                   
                   return (
                     <div key={step.step} className="relative space-y-1.5 text-left">
-                      <div className={`absolute -left-[30px] top-0.5 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs border ${
-                        isDone 
-                          ? "bg-emerald-primary border-emerald-primary text-white"
-                          : isCurrent
-                          ? "bg-emerald-primary/10 border-emerald-primary text-emerald-light animate-pulse"
-                          : "bg-bg-dark border-border-card text-text-muted"
-                      }`}>
+                      <button
+                        onClick={() => handleToggleStep(step.step, step.status)}
+                        title="Toggle task status"
+                        className={`absolute -left-[30px] top-0.5 w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs border transition-all cursor-pointer hover:scale-105 ${
+                          isDone 
+                            ? "bg-emerald-primary border-emerald-primary text-white"
+                            : isCurrent
+                            ? "bg-emerald-primary/10 border-emerald-primary text-emerald-light animate-pulse"
+                            : "bg-bg-dark border-border-card text-text-muted hover:border-emerald-primary/50"
+                        }`}
+                      >
                         {isDone ? "✓" : step.step}
-                      </div>
+                      </button>
 
                       <div className="ml-2.5">
                         <h5 className={`font-bold text-sm ${

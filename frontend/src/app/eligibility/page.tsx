@@ -51,6 +51,53 @@ export default function EligibilityPage() {
   const [hasChecked, setHasChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [demoProfiles, setDemoProfiles] = useState<any[]>([]);
+  const [checkedDocs, setCheckedDocs] = useState<Record<string, Record<string, boolean>>>({});
+
+  useEffect(() => {
+    const fetchDemos = async () => {
+      try {
+        const res = await api.get("/eligibility/demo-profiles");
+        setDemoProfiles(res.data || []);
+      } catch (e) {
+        // Mock fallback if offline/no backend
+        setDemoProfiles([
+          {
+            name: "Student (Aruzhan)",
+            profile: { age: 20, region: "Almaty", employment_status: "unemployed", monthly_income: 45000, is_student: true, has_family: false, family_size: 1, is_business_owner: false, interests: ["education", "scholarship", "study"], language: "ru" }
+          },
+          {
+            name: "Entrepreneur (Daniyar)",
+            profile: { age: 27, region: "Astana", employment_status: "self_employed", monthly_income: 280000, is_student: false, has_family: false, family_size: 1, is_business_owner: true, interests: ["startup", "business", "it", "innovation"], language: "ru" }
+          }
+        ]);
+      }
+    };
+    fetchDemos();
+  }, []);
+
+  const loadDemoProfile = (p: any) => {
+    setAge(p.age);
+    setRegion(p.region);
+    setEmploymentStatus(p.employment_status);
+    setMonthlyIncome(p.monthly_income);
+    setIsStudent(p.is_student);
+    setHasFamily(p.has_family);
+    setFamilySize(p.family_size || 1);
+    setIsBusinessOwner(p.is_business_owner);
+    setInterests(p.interests ? p.interests.join(", ") : "");
+  };
+
+  const toggleDocChecked = (programId: string, docName: string) => {
+    setCheckedDocs((prev) => ({
+      ...prev,
+      [programId]: {
+        ...(prev[programId] || {}),
+        [docName]: !(prev[programId]?.[docName])
+      }
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!age || monthlyIncome === "") {
@@ -117,7 +164,25 @@ export default function EligibilityPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Form */}
           <form onSubmit={handleSubmit} className="lg:col-span-5 bg-bg-card border border-border-card rounded-3xl p-6 space-y-6 h-fit text-left">
-            <h3 className="font-outfit font-bold text-lg text-white mb-4">{t("profileMetrics")}</h3>
+            <h3 className="font-outfit font-bold text-lg text-white mb-2">{t("profileMetrics")}</h3>
+
+            {demoProfiles.length > 0 && (
+              <div className="space-y-2 border-b border-border-card/40 pb-4">
+                <span className="text-[10px] font-bold text-emerald-light uppercase tracking-wider block">Load Demo Profile</span>
+                <div className="flex flex-wrap gap-2">
+                  {demoProfiles.map((dp, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => loadDemoProfile(dp.profile)}
+                      className="px-3 py-1.5 rounded-xl text-xs bg-bg-dark hover:bg-emerald-primary/10 border border-border-card hover:border-emerald-primary/30 text-text-secondary hover:text-white transition-all font-semibold"
+                    >
+                      {dp.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -334,6 +399,44 @@ export default function EligibilityPage() {
                               <span>{m}</span>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {item.next_steps && item.next_steps.length > 0 && (
+                      <div className="space-y-2 pt-2 border-t border-border-card/30">
+                        <div className="text-xs font-bold text-white">Recommended Next Steps</div>
+                        <div className="grid gap-1.5">
+                          {item.next_steps.map((step, i) => (
+                            <div key={i} className="text-xs text-text-secondary flex items-start gap-2">
+                              <span className="text-emerald-light font-bold">{i + 1}.</span>
+                              <span>{step}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {item.required_documents && item.required_documents.length > 0 && (
+                      <div className="space-y-2 pt-2 border-t border-border-card/30">
+                        <div className="text-xs font-bold text-white">Required Documents Checklist</div>
+                        <div className="grid gap-2 mt-1">
+                          {item.required_documents.map((doc, i) => {
+                            const isChecked = !!checkedDocs[item.program.id]?.[doc];
+                            return (
+                              <label key={i} className="flex items-center gap-2.5 text-xs text-text-secondary cursor-pointer hover:text-white transition-colors">
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={() => toggleDocChecked(item.program.id, doc)}
+                                  className="rounded border-border-card bg-bg-dark text-emerald-primary focus:ring-emerald-primary w-3.5 h-3.5"
+                                />
+                                <span className={isChecked ? "line-through text-text-muted" : ""}>
+                                  {doc.replace("_", " ").replace(/\b\w/g, c => c.toUpperCase())}
+                                </span>
+                              </label>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

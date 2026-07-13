@@ -12,14 +12,29 @@ from app.database import Base, get_db
 from app.config import settings
 
 # ---- Test Database ----
-TEST_DB_URL = "postgresql+asyncpg://govguide:password@localhost:5432/govguide_test"
-test_engine = create_async_engine(TEST_DB_URL, echo=False)
+import os
+from sqlalchemy.pool import NullPool
+
+TEST_DB_URL = os.getenv(
+    "TEST_DATABASE_URL",
+    "postgresql+asyncpg://govguide:password@postgres:5432/govguide_test"
+    if os.path.exists("/.dockerenv")
+    else "postgresql+asyncpg://govguide:password@localhost:5432/govguide_test"
+)
+test_engine = create_async_engine(TEST_DB_URL, poolclass=NullPool, echo=False)
 TestSessionLocal = async_sessionmaker(bind=test_engine, expire_on_commit=False)
 
 
 async def override_get_db():
     async with TestSessionLocal() as session:
-        yield session
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
 
 
 app.dependency_overrides[get_db] = override_get_db
@@ -267,3 +282,68 @@ class TestHealth:
     async def test_root(self, client):
         response = await client.get("/")
         assert response.status_code == 200
+
+
+# ================================================================
+# DEMO PROFILES AND DETAILED ROADMAPS
+# ================================================================
+class TestDemoAndRoadmaps:
+
+    @pytest.mark.asyncio
+    async def test_get_demo_profiles(self, client):
+        response = await client.get("/api/v1/eligibility/demo-profiles")
+        assert response.status_code == 200
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 5
+        assert data[0]["name"] == "Aruzhan"
+
+    @pytest.mark.asyncio
+    async def test_application_lifecycle_and_steps(self, client, auth_headers):
+        # 1. Create seed program
+        from app.models.program import GovernmentProgram, ProgramCategory, ProgramStatus
+        
+        program_id = uuid.uuid4()
+        async with TestSessionLocal() as session:
+            prog = GovernmentProgram(
+                id=program_id,
+                slug="test-life-prog",
+                status=ProgramStatus.ACTIVE,
+                category=ProgramCategory.GRANT,
+                title_ru="Тестовый грант",
+                title_kz="Тест грант",
+                title_en="Test Grant",
+                description_ru="Описание",
+                organization="Тест",
+                required_documents=["passport", "tax_certificate"]
+            )
+            session.add(prog)
+            await session.commit()
+
+        # 2. Create Application
+        create_res = await client.post(
+            "/api/v1/applications",
+            headers=auth_headers,
+            json={"program_id": str(program_id), "notes": "Life test"}
+        )
+        assert create_res.status_code == 201
+        app_id = create_res.json()["id"]
+
+        # 3. Retrieve single application details
+        get_res = await client.get(f"/api/v1/applications/{app_id}", headers=auth_headers)
+        assert get_res.status_code == 200
+        app_data = get_res.json()
+        assert app_data["program_title"] == "Тестовый грант"
+        assert len(app_data["roadmap"]) == 4
+        assert app_data["roadmap"][0]["title"] == "Document Checklist"
+
+        # 4. Update step status
+        put_res = await client.put(
+            f"/api/v1/applications/{app_id}/step",
+            headers=auth_headers,
+            json={"step": 1, "status": "done"}
+        )
+        assert put_res.status_code == 200
+        updated_data = put_res.json()
+        assert updated_data["roadmap"][0]["status"] == "done"
+        assert updated_data["completion_pct"] == 25.0
