@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/AppLayout";
 import { api } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
@@ -30,6 +30,7 @@ interface EligibleProgram {
   match_reasons: string[];
   missing_criteria: string[];
   required_documents: string[];
+  next_steps?: string[];
 }
 
 export default function EligibilityPage() {
